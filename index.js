@@ -251,7 +251,7 @@ client.on("messageCreate", async (message) => {
   try {
     //afk handler uji coba jika ini membuat maslah pada slash command bisa di comment
     afkHandler.handleMessage(message, client);
-    
+
     // [LOGGING] Ukur waktu pengambilan data user
     console.time(`[PERF] getCachedUser`);
     const userData = await getCachedUser(
@@ -274,6 +274,20 @@ client.on("messageCreate", async (message) => {
           console.error(`[HANDLER ERROR] ${handlerName}:`, err);
         }
         console.timeEnd(`[PERF] Message Handler: ${handlerName}`);
+      }
+    }
+
+    // --- Penanganan Auto Handler (untuk fitur seperti plana session) ---
+    if (client.autoHandlers) {
+      for (const autoHandler of client.autoHandlers) {
+        const handlerName = autoHandler.name || "anonymousAutoHandler";
+        console.time(`[PERF] Auto Handler: ${handlerName}`);
+        try {
+          await autoHandler(message, client);
+        } catch (err) {
+          console.error(`[AUTO HANDLER ERROR] ${handlerName}:`, err);
+        }
+        console.timeEnd(`[PERF] Auto Handler: ${handlerName}`);
       }
     }
 
